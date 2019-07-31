@@ -19,7 +19,7 @@ package com.hupubao.common.http;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hupubao.common.http.utils.XmlUtils;
-import com.seichiiwei.common.utils.LoggerUtils;
+import com.hupubao.common.utils.LoggerUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
