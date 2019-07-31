@@ -97,8 +97,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.seichiiwei</groupId>
-            <artifactId>seichii-common</artifactId>
+            <groupId>com.hupubao</groupId>
+            <artifactId>hupubao-common-utils</artifactId>
             <version>${version}</version>
         </dependency>
     </dependencies>
