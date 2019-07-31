@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.seichiiwei.common.http;
+package com.hupubao.common.http;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.seichiiwei.common.http.utils.XmlUtils;
+import com.hupubao.common.http.utils.XmlUtils;
 import com.seichiiwei.common.utils.LoggerUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;

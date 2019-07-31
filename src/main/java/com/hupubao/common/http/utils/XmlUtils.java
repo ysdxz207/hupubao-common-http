@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.seichiiwei.common.http.utils;
+package com.hupubao.common.http.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

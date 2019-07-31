@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <groupId>com.seichiiwei</groupId>
-    <artifactId>seichii-common-http</artifactId>
+    <groupId>win.hupubao</groupId>
+    <artifactId>hupubao-common-http</artifactId>
     <version>0.0.1</version>
-    <name>seichii-common-http</name>
+    <name>hupubao-common-http</name>
     <packaging>jar</packaging>
-    <url>https://github.com/ysdxz207/seichii-common-http</url>
+    <url>https://github.com/ysdxz207/hupubao-common-http</url>
     <description>http请求访问工具</description>
 
 
