@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <groupId>win.hupubao</groupId>
+    <groupId>com.hupubao</groupId>
     <artifactId>hupubao-common-http</artifactId>
     <version>0.0.1</version>
     <name>hupubao-common-http</name>
