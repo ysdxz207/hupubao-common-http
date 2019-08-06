@@ -21,10 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.hupubao.common.http.utils.XmlUtils;
 import com.hupubao.common.utils.LoggerUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -88,6 +85,8 @@ public class Page {
 
     private static final Pattern PATTERN_CHARSET = Pattern.compile(".*charset=([^;]*).*");
     private static final Pattern PATTERN_CHARSET_DEEP = Pattern.compile(".*charset=\"(.*)\".*");
+
+    private static final String CONTENT_TYPE_JSON = "application/json";
 
     public static Page create() {
         return new Page();
@@ -200,6 +199,10 @@ public class Page {
 
         if (params == null) {
             return post;
+        }
+
+        if (HEADERS.containsValue(CONTENT_TYPE_JSON) && params instanceof JSONObject) {
+            params = JSON.toJSONString(params);
         }
 
         if (params instanceof Map) {
@@ -364,6 +367,7 @@ public class Page {
                 html = new String(bytes, charset);
                 response.setBaseUri(baseUri);
                 response.setResult(html);
+                response.setHeaders(httpResponse.getAllHeaders());
                 return response;
             }
         } catch (UnknownHostException e) {
@@ -411,6 +415,7 @@ public class Page {
         private int statusCode = 0;
         private String baseUri;
         private String result;
+        private Header [] headers;
 
         public Response() {
         }
@@ -446,6 +451,15 @@ public class Page {
             return Jsoup.parse(this.result == null ? "" : this.result);
         }
 
+        public Header getHeader(String key) {
+            for (Header header : headers) {
+                if (header.getName().equals(key)) {
+                    return header;
+                }
+            }
+            return null;
+        }
+
         @Override
         public String toString() {
             return this.result;
@@ -473,6 +487,14 @@ public class Page {
 
         public void setBaseUri(String baseUri) {
             this.baseUri = baseUri;
+        }
+
+        public Header[] getHeaders() {
+            return headers;
+        }
+
+        public void setHeaders(Header[] headers) {
+            this.headers = headers;
         }
     }
 
