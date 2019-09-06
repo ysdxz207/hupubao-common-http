@@ -25,9 +25,7 @@ import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URIUtils;
@@ -146,94 +144,78 @@ public class Page {
         return this;
     }
 
-    private HttpRequestBase getMethod(String url,
-                                      String method,
-                                      Object params) {
+    private HttpUriRequest getMethod(String url,
+                                     Connection.Method method,
+                                     Object params) {
 
-        HttpRequestBase httpMethod;
-
-        switch (method) {
-            default:
-            case "GET":
-
-                httpMethod = buildGetMethod(url, params);
-                break;
-            case "POST":
-
-                httpMethod = buildPostMethod(url, params);
-                break;
+        if (method == Connection.Method.GET) {
+            return buildGetMethod(url, params);
         }
 
+        return buildMethod(url, method, params);
 
-        return httpMethod;
     }
 
     private HttpRequestBase buildGetMethod(String url, Object params) {
         if (params == null) {
             return new HttpGet(url);
         }
-        if (!(params instanceof Map)) {
-            throw new RuntimeException("Get method paramaters should be JSONObject or Map.");
-        }
-
-        if (!(params instanceof JSONObject)) {
-            params = JSON.parseObject(JSON.toJSONString(params));
-        }
-
-        JSONObject paramsJSON = (JSONObject) params;
-        URIBuilder builder;
-        try {
-            builder = new URIBuilder(url);
-            if (!paramsJSON.isEmpty()) {
-                builder.addParameters(getParams(paramsJSON));
-            }
-            return new HttpGet(builder.build());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("[Page get parameters exception]:" + paramsJSON.toJSONString());
-        }
-    }
-
-    private HttpRequestBase buildPostMethod(String url,
-                                            Object params) {
-        HttpPost post = new HttpPost(url);
-
-        if (params == null) {
-            return post;
-        }
-
-        if (HEADERS.containsValue(CONTENT_TYPE_JSON) && params instanceof JSONObject) {
-            params = JSON.toJSONString(params);
-        }
 
         if (params instanceof Map) {
             params = JSON.parseObject(JSON.toJSONString(params));
         }
 
-        if (params instanceof JSONObject) {
-            JSONObject paramsJSON = (JSONObject) params;
-            if (!paramsJSON.isEmpty()) {
-
-                UrlEncodedFormEntity paramsEntity;
-                try {
-                    paramsEntity = new UrlEncodedFormEntity(getParams(paramsJSON), CHARSET);
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException("[Page post parameters exception]:" + paramsJSON.toJSONString());
-                }
-                post.setEntity(paramsEntity);
+        JSONObject paramsJson = JSON.parseObject(JSON.toJSONString(params));
+        URIBuilder builder;
+        try {
+            builder = new URIBuilder(url);
+            if (!paramsJson.isEmpty()) {
+                builder.addParameters(getParams(paramsJson));
             }
-        } else if (params instanceof String) {
-            StringEntity stringEntity;
-            try {
-                stringEntity = new StringEntity(params.toString(), CHARSET);
-            } catch (Exception e) {
-                throw new RuntimeException("Build post method exception:" + e.getMessage());
-            }
-            post.setEntity(stringEntity);
-        } else {
-            throw new RuntimeException("Unsupported paramaters type.");
+            return new HttpGet(builder.build());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("[Build parameters exception]:" + paramsJson.toJSONString());
         }
-        return post;
     }
+
+    private HttpUriRequest buildMethod(String url,
+                                       Connection.Method method,
+                                       Object params) {
+        RequestBuilder builder = RequestBuilder.create(method.name()).setUri(url);
+
+        if (params == null) {
+            return builder.build();
+        }
+
+        // json类型参数处理
+        if (HEADERS.containsValue(CONTENT_TYPE_JSON) && params instanceof JSONObject) {
+            params = JSON.toJSONString(params);
+        }
+
+        HttpEntity entity = null;
+
+        if (params instanceof String) {
+            entity = new StringEntity(params.toString(), CHARSET);
+        } else if (params instanceof Map) {
+
+            JSONObject paramsJson = JSON.parseObject(JSON.toJSONString(params));
+            if (!paramsJson.isEmpty()) {
+
+                try {
+                    entity = new UrlEncodedFormEntity(getParams(paramsJson), CHARSET);
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException("[Build parameters exception]:" + paramsJson.toJSONString());
+                }
+            }
+        }
+
+
+        builder.setEntity(entity);
+
+
+        return builder.build();
+    }
+
 
     private List<NameValuePair> getParams(JSONObject params) {
 
@@ -264,8 +246,8 @@ public class Page {
 
     /**
      * @param url
-     * @param params GET方式支持JSONObject类型
-     *               POST方式支持JSONObject和String类型
+     * @param params     GET方式支持JSONObject类型
+     *                   POST方式支持JSONObject和String类型
      * @param method
      * @param filePKCS12 证书
      * @return
@@ -286,7 +268,7 @@ public class Page {
             return response;
         }
 
-        HttpRequestBase httpMethod = getMethod(url, method.name(), params);
+        HttpUriRequest httpMethod = getMethod(url, method, params);
         HttpClientContext context = HttpClientContext.create();
         if (!IGNORE_USER_AGENT) {
             httpMethod.addHeader("User-Agent", USER_AGENT);
@@ -337,7 +319,7 @@ public class Page {
     }
 
     private Response requestAndParse(HttpClient httpClient,
-                                     HttpRequestBase method,
+                                     HttpUriRequest method,
                                      HttpClientContext context) {
         Response response = new Response(0, "", null);
         try {
@@ -415,7 +397,7 @@ public class Page {
         private int statusCode = 0;
         private String baseUri;
         private String result;
-        private Header [] headers;
+        private Header[] headers;
 
         public Response() {
         }
@@ -431,6 +413,7 @@ public class Page {
         /**
          * 返回结果内容转Json
          * 支持的body类型：json 字符串，xml字符串
+         *
          * @param extractXMLCDATA 是否提取CDATA值
          * @return
          * @throws XmlUtils
@@ -445,6 +428,7 @@ public class Page {
         /**
          * 使用须注意字符串中包含未转义的html内容也会被解析，
          * 可能会导致非预期结果
+         *
          * @return
          */
         public Document parse() {
