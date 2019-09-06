@@ -7,7 +7,7 @@
 
     <groupId>com.hupubao</groupId>
     <artifactId>hupubao-common-http</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>hupubao-common-http</name>
     <packaging>jar</packaging>
     <url>https://github.com/ysdxz207/hupubao-common-http</url>
@@ -17,6 +17,7 @@
     <properties>
         <maven.compiler.level>1.8</maven.compiler.level>
         <encoding>UTF-8</encoding>
+        <hupubao-common-utils.version>0.0.1</hupubao-common-utils.version>
     </properties>
 
     <distributionManagement>
@@ -99,7 +100,7 @@
         <dependency>
             <groupId>com.hupubao</groupId>
             <artifactId>hupubao-common-utils</artifactId>
-            <version>${version}</version>
+            <version>${hupubao-common-utils.version}</version>
         </dependency>
     </dependencies>
 
