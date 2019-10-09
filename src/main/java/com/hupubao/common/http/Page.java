@@ -31,6 +31,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -337,7 +338,9 @@ public class Page {
             }
             String baseUri = location != null ? location.toASCIIString() : "";
 
-            byte[] bytes = EntityUtils.toByteArray(httpResponse.getEntity());
+            // 解决流不能多次读问题
+            HttpEntity entity = new BufferedHttpEntity(httpResponse.getEntity());
+            byte[] bytes = EntityUtils.toByteArray(entity);
             String html = new String(bytes);
 
             if (statusCode == HttpStatus.SC_OK
@@ -347,7 +350,7 @@ public class Page {
                 response.setBaseUri(baseUri);
                 response.setResult(html);
                 response.setHeaders(httpResponse.getAllHeaders());
-                response.setInputStream(httpResponse.getEntity().getContent());
+                response.setInputStream(entity.getContent());
                 return response;
             }
         } catch (UnknownHostException e) {
