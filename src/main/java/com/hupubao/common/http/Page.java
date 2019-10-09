@@ -45,10 +45,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import javax.net.ssl.SSLContext;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -350,6 +347,7 @@ public class Page {
                 response.setBaseUri(baseUri);
                 response.setResult(html);
                 response.setHeaders(httpResponse.getAllHeaders());
+                response.setInputStream(httpResponse.getEntity().getContent());
                 return response;
             }
         } catch (UnknownHostException e) {
@@ -398,6 +396,7 @@ public class Page {
         private String baseUri;
         private String result;
         private Header[] headers;
+        private InputStream inputStream;
 
         public Response() {
         }
@@ -479,6 +478,14 @@ public class Page {
 
         public void setHeaders(Header[] headers) {
             this.headers = headers;
+        }
+
+        public InputStream getInputStream() {
+            return inputStream;
+        }
+
+        public void setInputStream(InputStream inputStream) {
+            this.inputStream = inputStream;
         }
     }
 
