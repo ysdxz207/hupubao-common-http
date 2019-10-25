@@ -8,6 +8,8 @@
 </dependency>
 ```
 
+版本自行查看：[mvnrepository.com/artifact/com.hupubao/hupubao-common-http](mvnrepository.com/artifact/com.hupubao/hupubao-common-http)
+
 **Http工具**
 - 起因：爬小说数据时发现有些页面jsoup不能爬到小说内容，
 而HttpClient可以，又不想用太大的爬虫框架，
