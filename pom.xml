@@ -17,7 +17,7 @@
     <properties>
         <maven.compiler.level>1.8</maven.compiler.level>
         <encoding>UTF-8</encoding>
-        <hupubao-common-utils.version>0.0.1</hupubao-common-utils.version>
+        <hupubao-common-utils.version>0.0.6</hupubao-common-utils.version>
     </properties>
 
     <distributionManagement>
